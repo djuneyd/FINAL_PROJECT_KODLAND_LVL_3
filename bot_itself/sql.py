@@ -1,5 +1,5 @@
 import sqlite3
-from config import DATABASE
+from config import ADVICE_DATABASE
 
 class User_vacancies_manger:
     def __init__(self, database):
@@ -28,14 +28,20 @@ class User_vacancies_manger:
             cur.execute(sql, data)
             return cur.fetchall()
 
+class Advices_database:
+    def __init__(self, database):
+        self.database = database
+
+    def select_data(self, sql, data = tuple()): # fuction for fetching data from database
+        conn = sqlite3.connect(self.database)
+        with conn:
+            cur = conn.cursor()
+            cur.execute(sql, data)
+            return cur.fetchall()
+        
+    def random_advice(self):
+        sql = 'SELECT text FROM advice ORDER BY random() LIMIT 1'
+        return self.select_data(sql)[0][0]
 
 if __name__ == '__main__':
-    #user_vacancies_manager = User_vacancies_manger(DATABASE)
-    #user_vacancies_manager.create_tables()
-    
-
-    # create extra column for vacancies table called name
-    conn = sqlite3.connect(DATABASE)
-    with conn:
-       conn.execute('''ALTER TABLE vacancies ADD COLUMN name TEXT''')
-    conn.close()
+    pass

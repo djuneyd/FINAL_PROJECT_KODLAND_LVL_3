@@ -10,9 +10,10 @@ buf_dict_for_response = {}
 
 def inital_markup_for_commands():
     markup = telebot.types.InlineKeyboardMarkup()
-    markup.add(telebot.types.InlineKeyboardButton(text='Search for a job🔍', callback_data='search')) # this function is done
-    markup.add(telebot.types.InlineKeyboardButton(text='Generate random vacancy🎲', callback_data='vacancy')) # this function is done
-    markup.add(telebot.types.InlineKeyboardButton(text='View my saved jobs👀', callback_data='saved')) # almost done
+    markup.add(telebot.types.InlineKeyboardButton(text='Search for a job🔍', callback_data='search')) # done
+    markup.add(telebot.types.InlineKeyboardButton(text='Generate random vacancy🎲', callback_data='vacancy')) # done
+    markup.add(telebot.types.InlineKeyboardButton(text='View my saved jobs👀', callback_data='saved')) # done
+    markup.add(telebot.types.InlineKeyboardButton(text='Get a random advice for employment😎', callback_data='advice')) # 
     return markup
 
 def save_markup():
@@ -140,9 +141,14 @@ def callback_inline(call):
         vacancy_id = int(call.data.split(' ')[-1])
         vacancy = manager.select_data(f'SELECT description, name FROM vacancies WHERE id={vacancy_id}', [])
         bot.send_message(call.message.chat.id, f'Name: {vacancy[0][1]} \n {vacancy[0][0]}')
+    elif call.data == 'advice':
+        bot.delete_message(call.message.chat.id, call.message.message_id)
+        # send an advice using random advice function of advice manager
+        bot.send_message(call.message.chat.id, advice_manager.random_advice())
 
     if markup:
         bot.send_message(call.message.chat.id, 'Choose an option:', reply_markup=inital_markup_for_commands())
 if __name__ == '__main__':
     manager = User_vacancies_manger(DATABASE)
+    advice_manager = Advices_database(ADVICE_DATABASE)
     bot.infinity_polling()
