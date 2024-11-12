@@ -57,6 +57,13 @@ def setting_name(message):
     # initial markup for commands
     bot.send_message(message.chat.id, 'Choose an option:', reply_markup=inital_markup_for_commands())
 
+def delete_or_view(message, id):
+    markup = telebot.types.InlineKeyboardMarkup()
+    markup.add(telebot.types.InlineKeyboardButton(text='DELETE⛔', callback_data=f'delete {id}'))
+    markup.add(telebot.types.InlineKeyboardButton(text='VIEW👀', callback_data=f'view {id}'))
+    return markup
+
+
 
 @bot.message_handler(commands=['start'])
 def start_command(message):
@@ -116,12 +123,23 @@ def callback_inline(call):
     elif call.data == 'dont_save':
         bot.delete_message(call.message.chat.id, call.message.message_id)
     elif 'vacancy number' in call.data:
+        markup = False
+        bot.delete_message(call.message.chat.id, call.message.message_id)
+        # send the delete or view markup
+        vacancy_id = int(call.data.split(' ')[-1])
+        bot.send_message(call.message.chat.id, 'Choose an action:', reply_markup=delete_or_view(call, vacancy_id))
+    elif 'delete' in call.data:
+        bot.delete_message(call.message.chat.id, call.message.message_id)
+        # get the id of the vacancy
+        vacancy_id = int(call.data.split(' ')[-1])
+        manager.executemany('DELETE FROM vacancies WHERE id=?', [(vacancy_id,)])
+        bot.send_message(call.message.chat.id, 'Vacancy was deleted successfully!')
+    elif 'view' in call.data:
         bot.delete_message(call.message.chat.id, call.message.message_id)
         # get the id of the vacancy
         vacancy_id = int(call.data.split(' ')[-1])
         vacancy = manager.select_data(f'SELECT description, name FROM vacancies WHERE id={vacancy_id}', [])
         bot.send_message(call.message.chat.id, f'Name: {vacancy[0][1]} \n {vacancy[0][0]}')
-        pass
 
     if markup:
         bot.send_message(call.message.chat.id, 'Choose an option:', reply_markup=inital_markup_for_commands())
