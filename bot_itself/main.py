@@ -58,7 +58,7 @@ def setting_name(message):
     # initial markup for commands
     bot.send_message(message.chat.id, '🟩Choose an option🟩', reply_markup=inital_markup_for_commands())
 
-def delete_or_view(message, id):
+def delete_or_view(id):
     markup = telebot.types.InlineKeyboardMarkup()
     markup.add(telebot.types.InlineKeyboardButton(text='DELETE⛔', callback_data=f'delete {id}'))
     markup.add(telebot.types.InlineKeyboardButton(text='VIEW👀', callback_data=f'view {id}'))
@@ -128,7 +128,7 @@ def callback_inline(call):
         bot.delete_message(call.message.chat.id, call.message.message_id)
         # send the delete or view markup
         vacancy_id = int(call.data.split(' ')[-1])
-        bot.send_message(call.message.chat.id, '🟩Choose an action🟩', reply_markup=delete_or_view(call, vacancy_id))
+        bot.send_message(call.message.chat.id, '🟩Choose an action🟩', reply_markup=delete_or_view(vacancy_id))
     elif 'delete' in call.data:
         bot.delete_message(call.message.chat.id, call.message.message_id)
         # get the id of the vacancy
