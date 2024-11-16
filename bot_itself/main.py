@@ -24,7 +24,7 @@ def save_markup():
 
 def save_or_dont_save(message):
     # send the markup to the user
-    bot.send_message(message.chat.id, 'Do you want to save this vacancy?', reply_markup=save_markup())
+    bot.send_message(message.chat.id, 'Do you want to save this vacancy?🤨', reply_markup=save_markup())
     
 
 def job_based_on_preferences(message):
@@ -51,12 +51,12 @@ def view_saved_vacancies_markup(message):
 
 def setting_name(message):
     #say that the vacancy was saved
-    bot.send_message(message.chat.id, 'Your vacancy was saved!')
+    bot.send_message(message.chat.id, 'Your vacancy was saved!🥳')
     # save it to db
     id = manager.select_data(f'SELECT id FROM users WHERE telegram_id={message.from_user.id}')[0][0]
     manager.executemany('INSERT INTO vacancies (user_id, description, name) VALUES (?,?,?)', [(id, buf_dict_for_response[message.from_user.id], message.text)])
     # initial markup for commands
-    bot.send_message(message.chat.id, 'Choose an option:', reply_markup=inital_markup_for_commands())
+    bot.send_message(message.chat.id, '🟩Choose an option🟩', reply_markup=inital_markup_for_commands())
 
 def delete_or_view(message, id):
     markup = telebot.types.InlineKeyboardMarkup()
@@ -80,7 +80,7 @@ def start_command(message):
         result = manager.select_data('SELECT telegram_id FROM users', [])
     
     bot.send_message(message.chat.id, f'''Hello, @{message.from_user.username}! I am HR Telegram Bot. I will help you find a job based on your preferences.😎
-Choose an option:''', reply_markup=inital_markup_for_commands())
+🟩Choose an option🟩''', reply_markup=inital_markup_for_commands())
     
 @bot.callback_query_handler(func=lambda call: True)
 def callback_inline(call):
@@ -89,7 +89,7 @@ def callback_inline(call):
     if call.data =='search':
         markup = False
         bot.delete_message(call.message.chat.id, call.message.message_id)
-        bot.send_message(call.message.chat.id, 'Please provide your job preferences, salary, field etc.')
+        bot.send_message(call.message.chat.id, 'Please provide your job preferences, salary, field etc.😁')
         bot.register_next_step_handler(call.message, job_based_on_preferences)
     elif call.data =='saved':
         markup = False
@@ -100,7 +100,7 @@ def callback_inline(call):
             bot.send_message(call.message.chat.id, 'You have no saved vacancies.😭')
             markup = True
         else:
-            bot.send_message(call.message.chat.id, 'Choose a vacancy to view:', reply_markup=view_saved_vacancies_markup(call))
+            bot.send_message(call.message.chat.id, '🟩Choose a vacancy to view🟩', reply_markup=view_saved_vacancies_markup(call))
     elif call.data == 'vacancy':
         markup = False
         bot.delete_message(call.message.chat.id, call.message.message_id)
@@ -119,7 +119,7 @@ def callback_inline(call):
         markup = False
         bot.delete_message(call.message.chat.id, call.message.message_id)
         # set the name for it
-        bot.send_message(call.message.chat.id, 'Please set a name for this vacancy.')
+        bot.send_message(call.message.chat.id, 'Please set a name for this vacancy.😱')
         bot.register_next_step_handler(call.message, setting_name)
     elif call.data == 'dont_save':
         bot.delete_message(call.message.chat.id, call.message.message_id)
@@ -128,13 +128,13 @@ def callback_inline(call):
         bot.delete_message(call.message.chat.id, call.message.message_id)
         # send the delete or view markup
         vacancy_id = int(call.data.split(' ')[-1])
-        bot.send_message(call.message.chat.id, 'Choose an action:', reply_markup=delete_or_view(call, vacancy_id))
+        bot.send_message(call.message.chat.id, '🟩Choose an action🟩', reply_markup=delete_or_view(call, vacancy_id))
     elif 'delete' in call.data:
         bot.delete_message(call.message.chat.id, call.message.message_id)
         # get the id of the vacancy
         vacancy_id = int(call.data.split(' ')[-1])
         manager.executemany('DELETE FROM vacancies WHERE id=?', [(vacancy_id,)])
-        bot.send_message(call.message.chat.id, 'Vacancy was deleted successfully!')
+        bot.send_message(call.message.chat.id, 'Vacancy was deleted successfully!🥶')
     elif 'view' in call.data:
         bot.delete_message(call.message.chat.id, call.message.message_id)
         # get the id of the vacancy
@@ -144,10 +144,10 @@ def callback_inline(call):
     elif call.data == 'advice':
         bot.delete_message(call.message.chat.id, call.message.message_id)
         # send an advice using random advice function of advice manager
-        bot.send_message(call.message.chat.id, advice_manager.random_advice())
+        bot.send_message(call.message.chat.id, f'{advice_manager.random_advice()}❗')
 
     if markup:
-        bot.send_message(call.message.chat.id, 'Choose an option:', reply_markup=inital_markup_for_commands())
+        bot.send_message(call.message.chat.id, '🟩Choose an option🟩', reply_markup=inital_markup_for_commands())
 if __name__ == '__main__':
     manager = User_vacancies_manger(DATABASE)
     advice_manager = Advices_database(ADVICE_DATABASE)
