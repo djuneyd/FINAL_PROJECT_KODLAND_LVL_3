@@ -80,6 +80,7 @@ def start_command(message):
         result = manager.select_data('SELECT telegram_id FROM users', [])
     
     bot.send_message(message.chat.id, f'''Hello, @{message.from_user.username}! I am HR Telegram Bot. I will help you find a job based on your preferences.😎
+(ALL VACANCIES ARE ❗FAKE❗ IT WILL ONLY PROVIDE YOU IDEAS FOR YOUR FUTURE JOB)
 🟩Choose an option🟩''', reply_markup=inital_markup_for_commands())
     
 @bot.callback_query_handler(func=lambda call: True)
